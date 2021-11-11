@@ -1,7 +1,10 @@
 #lang racket/base
+;; https://github.com/dyoo/infix-syntax-example/
+
 
 (require (for-syntax racket/base
                      syntax/boundmap))
+(require racket/bool)
 
 (provide (except-out (all-from-out racket/base) #%app)
          (rename-out [my-app #%app])
@@ -103,4 +106,116 @@
              [(lhs op rhs)
               (syntax/loc stx2 (op lhs rhs))]))))]))
 
+;; COPYRIGHT 2021 Nan0Scho1ar (Christopher Mackinga)
+;
+; TODO nice not implementation
 
+;; remap and/or
+;; (require (rename-in racket/base (and ^)))
+;; (require (rename-in racket/base (or v)))
+;; (require (rename-in racket/bool (implies ->)))
+
+;; Implement and without short circuit
+(define (^ a b)
+  (begin
+    (define a_ a)
+    (define b_ b)
+    (and a_ b_)))
+
+;; Implement or without short circuit
+(define (v a b)
+  (begin
+    (define a_ a)
+    (define b_ b)
+    (or a_ b_)))
+
+
+;; Implement implies without short circuit
+(define (-> a b)
+  (begin
+    (define a_ a)
+    (define b_ b)
+    (implies a_ b_)))
+
+;; allow infix and/or
+(declare-infix ^)
+(declare-infix v)
+(declare-infix ->)
+
+(provide ^)
+(provide v)
+(provide ->)
+
+;; Macro to create an "antilogic axiom"
+(require syntax/parse/define
+         (for-syntax racket/base racket/syntax syntax/transformer))
+(define-syntax-parse-rule (axiom name:id val:expr)
+  #:with inverse (format-id #'name "!~a" #'name)
+  (begin
+    (define tmp val)
+    (define-syntax inverse
+      (make-variable-like-transformer
+        #'(begin0 (not tmp) (set! tmp (not tmp)))))
+    (define-syntax name
+      (make-variable-like-transformer
+        #'(begin0 tmp (set! tmp (not tmp)))))))
+
+(provide axiom)
+
+ (require (for-syntax racket/base syntax/transformer))
+ (define-syntax-rule (def name val)
+     (define-syntax name
+       (make-variable-like-transformer
+        #'(begin0 (eval val)))))
+
+(provide def)
+
+;; Print bool as 1 or zero
+(define (show expr)
+    (if expr
+        (display 1)
+        (display 0)))
+(provide show)
+
+;; Get current value of axiom without disturbing it (for debugging)
+(define (peek axiom)
+  (begin (eval axiom)
+         (not (eval axiom))))
+
+(provide peek)
+
+;; (define (loop n lst)
+;;   (for ([i (in-range n)])
+;;     (eval lst)))
+;; (provide loop)
+
+;; (require (rename-in racket/base (and and)))
+;; (require (rename-in racket/base (or or)))
+;; (require (rename-in racket/base (not not)))
+
+;; (define-namespace-anchor anc)
+;; (define ns (namespace-anchor->namespace anc))
+
+;; (define-syntax-rule (get-val x)
+;;   (begin (set! x (not x)) x))
+
+;; (define-syntax-rule (def name val)
+;;   (begin
+;;     (define name_ (string-append (symbol->string name) "_"))
+;;     (eval `(define ,(string->symbol name_) ,val)
+;;           ns)
+;;     (eval `(define-syntax
+;;              (,name stx)
+;;              #'(get-val ,(string->symbol name_)))
+;;           ns)))
+
+;; (require (for-syntax racket/base racket/syntax syntax/transformer))
+;; (define-syntax (def stx)
+;;   (syntax-case stx ()
+;;     [(def name val)
+;;      (with-syntax ([name_ (format-id #'name "~a_" #'name)])
+;;        #'(begin
+;;            (define name_ val)
+;;            (define-syntax name
+;;              (make-variable-like-transformer
+;;               #'(begin0 name_ (set! name_ (not name_)))))))]))
