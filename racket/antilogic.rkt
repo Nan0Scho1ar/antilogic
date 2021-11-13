@@ -6,6 +6,9 @@
                      syntax/boundmap))
 (require racket/bool)
 
+(require syntax/parse/define
+         (for-syntax racket/base racket/syntax syntax/transformer))
+
 (provide (except-out (all-from-out racket/base) #%app)
          (rename-out [my-app #%app])
 
@@ -147,12 +150,14 @@
 (provide ->)
 
 ;; Macro to create an "antilogic axiom"
-(require syntax/parse/define
-         (for-syntax racket/base racket/syntax syntax/transformer))
 (define-syntax-parse-rule (axiom name:id val:expr)
   #:with inverse (format-id #'name "!~a" #'name)
+  #:with peek (format-id #'name "peek~a" #'name)
   (begin
     (define tmp val)
+    (define-syntax peek
+      (make-variable-like-transformer
+        #'(begin0 tmp (set! tmp tmp))))
     (define-syntax inverse
       (make-variable-like-transformer
         #'(begin0 (not tmp) (set! tmp (not tmp)))))
@@ -162,11 +167,10 @@
 
 (provide axiom)
 
- (require (for-syntax racket/base syntax/transformer))
- (define-syntax-rule (def name val)
-     (define-syntax name
-       (make-variable-like-transformer
-        #'(begin0 (eval val)))))
+(define-syntax-parse-rule (def name:id val:expr)
+    (define-syntax name
+      (make-variable-like-transformer
+        (eval val))))
 
 (provide def)
 
@@ -178,11 +182,11 @@
 (provide show)
 
 ;; Get current value of axiom without disturbing it (for debugging)
-(define (peek axiom)
-  (begin (eval axiom)
-         (not (eval axiom))))
+;; (define (peek axiom)
+;;   (begin (eval axiom)
+;;          (not (eval axiom))))
 
-(provide peek)
+;; (provide peek)
 
 ;; (define (loop n lst)
 ;;   (for ([i (in-range n)])

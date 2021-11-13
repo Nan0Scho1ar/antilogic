@@ -1,13 +1,15 @@
 #lang s-exp "antilogic.rkt"
 
 (axiom A #f)
-
-(def B '!A)
+(axiom B #f)
+(axiom C #f)
+(axiom D #f)
 
 ;(def C '(!A ^ B))
 ;(def !C '(not C))
 ;; 2 bit counter
-(for ([i (in-range 32)])
+(for ([i (in-range 8)])
   (begin
-    (show !A)
-    (newline)))
+    (show (A -> !B))
+    (newline)
+    ))
