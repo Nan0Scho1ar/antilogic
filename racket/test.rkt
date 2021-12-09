@@ -10,10 +10,18 @@
 ;;     (show ((A ^ B) v B))
 ;;     (newline)))
 
-;; 2 bit counter
-(for ([i (in-range 32)])
-  (begin
-    (implies (implies A (or B A)) A)
-    (show B)
-    (show A)
-    (newline)))
+
+
+(^ #f #t)
+
+
+;; A
+;; ;; 2 bit counter
+;; (for ([i (in-range 32)])
+;;   (begin
+;;     ((A -> (B v A)) -> A)
+;;     (show B)
+;;     (show A)
+;;     (newline)))
+
+;;     (implies (implies A (or B A)) A)
