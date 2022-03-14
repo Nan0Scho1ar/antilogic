@@ -1,0 +1,15 @@
+Antilogic vs bistable logic (Short circuiting)
+
+LID: (A = A)
+LNC: (A =/= ¬A)
+LEM: (A ∨ ¬A)
+
+ALID: (A =/= A) ALID = ¬ALID
+ALNC: (A = ¬A)
+ALEM: ¬(A ∨ ¬A)
+
+Tractatus "green is green"
+paraconsistent logic
+
+Liars paradox is a false dilemma
+Russels Paradox

@@ -2,20 +2,22 @@
 
 (axiom A #f)
 (axiom B #f)
-(axiom B #f)
+(axiom C #f)
 
-;; (for ([i (in-range 4)])
-;;   (begin
-;;     (show (A ^ B))
-;;     (show ((A ^ B) v B))
-;;     (newline)))
-
-
-
-(^ #f #t)
+(for ([i (in-range 4)])
+  (begin
+    (show (A ^ B))
+    (show ((A ^ B) v B))
+    (newline)))
 
 
-;; A
+
+;; (^ #f #t)
+;; (^ A A)
+;; (^ A (not A))
+
+
+
 ;; ;; 2 bit counter
 ;; (for ([i (in-range 32)])
 ;;   (begin
@@ -23,5 +25,3 @@
 ;;     (show B)
 ;;     (show A)
 ;;     (newline)))
-
-;;     (implies (implies A (or B A)) A)
